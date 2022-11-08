@@ -8,7 +8,6 @@
 #
 #   PyOpenGL, GLFW
 
-
 import sys, os, math
 
 try: # PyOpenGL
@@ -220,11 +219,37 @@ def turn( a, b, c ):
 
 def buildTristrips( triangles ):
 
-    count = 0
-
+    count = 0 #Number of Strips
     # [YOUR CODE HERE]
-    #
     # Increment 'count' every time you *start* a new triStrip.
+    i = 0
+    while i!=len(triangles)-1: #Keep making strips if all elements of triangles haven't been checked. O(n)?
+        i = 0
+        start = triangles[i] #This will start the first triangle. The triangles change every iteration, so every time start at the beginning
+        op2 = None #option 2
+
+        while (start.openNum()!= or start.nextTri != None) and i < len (triangles) -1: #Won't run if a corner is found, will run n times (not a corner, open triangle, in range of triangle)
+            if start.openNum() == 2 and op2 == None: #Keep track if triangle with an edge is found 
+                op2 = start
+            i += 1
+            start = triangles[i]
+        
+        if start.openNum() != 1 and op2 != None: #Use edge if in first loop an edge is found but corner isn't
+            start = op2 
+            i = 0 #Only change i so that the while loop doesn't end. this needs to be done because there are still elemends to check
+
+        if i != len(triangles) - 1: 
+            count += 1 #Making a new list
+            current = start 
+            while current.openNum() != 0:
+                x = current.leastFull() #when there are no open triangles (full)
+                current.nextTri = current.adjTris[x] #find the best option for adjacent triangle
+                current.adjTris[x].prevTri = current #current
+                current = current.adjTris[x]
+
+    for tri in triangles:
+        if tri.openNum() == 0 and tri.nextTri == None and tri.prevTri == None:
+            count += 1
 
     print( 'Generated %d tristrips' % count )
 
