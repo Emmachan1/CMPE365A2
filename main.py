@@ -66,7 +66,7 @@ class Triangle(object):
 
       self.nextTri = None  # next triangle on strip
       self.prevTri = None  # previous triangle on strip
-
+      self.mesh = False
       self.highlight1 = False # to cause drawing to highlight this triangle in colour 1
       self.highlight2 = False # to cause drawing to highlight this triangle in colour 2
 
@@ -143,8 +143,23 @@ class Triangle(object):
         return (turn( allVerts[self.verts[0]], allVerts[self.verts[1]], pt ) == LEFT_TURN and
                 turn( allVerts[self.verts[1]], allVerts[self.verts[2]], pt ) == LEFT_TURN and
                 turn( allVerts[self.verts[2]], allVerts[self.verts[0]], pt ) == LEFT_TURN)
-      
+    
+    def openNumber(self): #None -> number of open triangles
+        x = 0   #Number of open triangles
+        for i in range(len(self.adjTris)):  # look at all the adjacent triangles. this can only run a max of 3 times becuase O(1)
+            if self.adjTris[i].nextTri == None and self.adjTris[i].prevTri == None:
+                x += 1
+        return x
 
+    def leastFull(self): #None -> the least full triangle of all adjacent ones
+        least = [4,4] #upper bound
+        for i in range(len(self.adjTris)): #look at all of the adjacent triangles and again can only run maximum of 3 times because O(1)
+            cur = self.adjTris[i]
+            if cur.nextTri == None and cur.prevTri == None: #Check what is not part of a strip
+                x = cur.openNumber()
+                if x < least[1]:    #note the least valued adjacent triangles
+                    least = [i, x]
+            return least[0]
 
 
 # Draw an arrow between two points.
@@ -228,27 +243,28 @@ def buildTristrips( triangles ):
         start = triangles[i] #This will start the first triangle. The triangles change every iteration, so every time start at the beginning
         op2 = None #option 2
 
-        while (start.openNum()!=1 or start.nextTri != None) and i<len(triangles)-1: #Won't run if a corner is found, will run n times (not a corner, open triangle, in range of triangle)
-            if start.openNum() == 2 and op2 == None: #Keep track if triangle with an edge is found 
+        while (start.openNumber()!=1 or start.nextTri != None) and i<len(triangles)-1: #Won't run if a corner is found, will run n times (not a corner, open triangle, in range of triangle)
+            if start.openNumber() == 2 and op2 == None: #Keep track if triangle with an edge is found 
                 op2 = start
             i += 1
             start = triangles[i]
         
-        if start.openNum() != 1 and op2 != None: #Use edge if in first loop an edge is found but corner isn't
+        if start.openNumber() != 1 and op2 != None: #Use edge if in first loop an edge is found but corner isn't
             start = op2 
             i = 0 #Only change i so that the while loop doesn't end. this needs to be done because there are still elemends to check
 
         if i != len(triangles) - 1: 
             count += 1 #Making a new list
             current = start 
-            while current.openNum() != 0:
+            while current.openNumber() != 0:
                 x = current.leastFull() #when there are no open triangles (full)
                 current.nextTri = current.adjTris[x] #find the best option for adjacent triangle
                 current.adjTris[x].prevTri = current #current
                 current = current.adjTris[x]
-
+            display(wait=True)
+            
     for tri in triangles:
-        if tri.openNum() == 0 and tri.nextTri == None and tri.prevTri == None:
+        if tri.openNumber() == 0 and tri.nextTri == None and tri.prevTri == None:
             count += 1
 
     print( 'Generated %d tristrips' % count )
