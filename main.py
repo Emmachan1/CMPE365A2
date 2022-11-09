@@ -228,7 +228,7 @@ def buildTristrips( triangles ):
         start = triangles[i] #This will start the first triangle. The triangles change every iteration, so every time start at the beginning
         op2 = None #option 2
 
-        while (start.openNum()!= or start.nextTri != None) and i < len (triangles) -1: #Won't run if a corner is found, will run n times (not a corner, open triangle, in range of triangle)
+        while (start.openNum()!=1 or start.nextTri != None) and i<len(triangles)-1: #Won't run if a corner is found, will run n times (not a corner, open triangle, in range of triangle)
             if start.openNum() == 2 and op2 == None: #Keep track if triangle with an edge is found 
                 op2 = start
             i += 1
