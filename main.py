@@ -159,7 +159,7 @@ class Triangle(object):
                 x = cur.openNumber()
                 if x < least[1]:    #note the least valued adjacent triangles
                     least = [i, x]
-            return least[0]
+        return least[0]
 
 
 # Draw an arrow between two points.
@@ -261,7 +261,7 @@ def buildTristrips( triangles ):
                 current.nextTri = current.adjTris[x] #find the best option for adjacent triangle
                 current.adjTris[x].prevTri = current #current
                 current = current.adjTris[x]
-            display(wait=True)
+            #display(wait=True)
             
     for tri in triangles:
         if tri.openNumber() == 0 and tri.nextTri == None and tri.prevTri == None:
