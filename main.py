@@ -151,7 +151,7 @@ class Triangle(object):
                 x += 1
         return x
 
-    def leastFull(self): #None -> the least full triangle of all adjacent ones
+    def leastFullTri(self): #None -> the least full triangle of all adjacent ones
         least = [4,4] #upper bound
         for i in range(len(self.adjTris)): #look at all of the adjacent triangles and again can only run maximum of 3 times because O(1)
             cur = self.adjTris[i]
@@ -257,7 +257,7 @@ def buildTristrips( triangles ):
             count += 1 #Making a new list
             current = start 
             while current.openNumber() != 0:
-                x = current.leastFull() #when there are no open triangles (full)
+                x = current.leastFullTri() #when there are no open triangles (full)
                 current.nextTri = current.adjTris[x] #find the best option for adjacent triangle
                 current.adjTris[x].prevTri = current #current
                 current = current.adjTris[x]
